@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Бронювання{% endblock %}
+
+{% block content %}
+
+  <style>
+    .room-photo {
+      max-width: 300px;
+      margin-top: 10px;
+      display: none;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <form action="{{ url_for('reservation') }}" method="post">
+    <label for="date-from">Дата заїзду:</label><br />
+    <input type="date" id="date-from" name="date_from" required /><br /><br />
+
+    <label for="date-to">Дата виїзду:</label><br />
+    <input type="date" id="date-to" name="date_to" required /><br /><br />
+
+    <label for="rooms">Кількість кімнат:</label><br />
+    <input type="number" id="rooms" name="rooms" min="1" required /><br /><br />
+
+    <label for="room-type">Тип кімнати:</label><br />
+    <select id="room-type" name="room_type" required>
+      <option value="" disabled selected>Оберіть тип кімнати</option>
+      <option value="Одномісна">Одномісна</option>
+      <option value="Двомісна">Двомісна</option>
+      <option value="Чотиримісна">Чотиримісна</option>
+    </select><br />
+
+    <img id="photo-Одномісна" class="room-photo" src="{{ url_for('static', filename='rooms/v3R5eT9.jpg') }}" alt="Одномісна кімната" />
+    <img id="photo-Двомісна" class="room-photo" src="{{ url_for('static', filename='rooms/i9TefXc.jpg') }}" alt="Двомісна кімната" />
+    <img id="photo-Чотиримісна" class="room-photo" src="{{ url_for('static', filename='rooms/four.jpg') }}" alt="Чотиримісна кімната" />
+
+    <br /><br />
+    <label for="guests">Кількість осіб:</label><br />
+    <input type="number" id="guests" name="guests" min="1" required /><br /><br />
+
+    <button type="submit">Забронювати</button>
+  </form>
+
+  <script>
+    const select = document.getElementById('room-type');
+    const photos = document.querySelectorAll('.room-photo');
+
+    select.addEventListener('change', () => {
+      photos.forEach(photo => photo.style.display = 'none');
+      const selected = select.value;
+      const photoToShow = document.getElementById('photo-' + selected);
+      if (photoToShow) {
+        photoToShow.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+
+{% endblock %}

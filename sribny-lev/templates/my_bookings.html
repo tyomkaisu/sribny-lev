@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Мої бронювання{% endblock %}
+
+{% block content %}
+<h2>Мої бронювання</h2>
+
+{% if reservations %}
+<div class="table-container">
+    <table class="booking-table">
+        <thead>
+            <tr>
+                <th>Дата заїзду</th>
+                <th>Дата виїзду</th>
+                <th>К-сть кімнат</th>
+                <th>Тип кімнати</th>
+                <th>Гості</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in reservations %}
+            <tr>
+                <td>{{ r[1] }}</td>  {# date_from #}
+                <td>{{ r[2] }}</td>  {# date_to #}
+                <td>{{ r[3] }}</td>  {# rooms #}
+                <td>{{ r[4] }}</td>  {# room_type #}
+                <td>{{ r[5] }}</td>  {# guests #}
+                <td>Очікується</td>  {# Статус: hardcoded поки що #}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>У вас поки немає бронювань.</p>
+{% endif %}
+
+{% endblock %}

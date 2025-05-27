@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Список бронювань{% endblock %}
+
+{% block content %}
+  <section>
+    <h2>Всі бронювання</h2>
+    {% if reservations %}
+      <table border="1" cellpadding="10" cellspacing="0" style="margin: 0 auto; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>Користувач</th>
+            <th>Дата заїзду</th>
+            <th>Дата виїзду</th>
+            <th>Кількість кімнат</th>
+            <th>Тип кімнати</th>
+            <th>Кількість гостей</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reservations %}
+          <tr>
+            <td>{{ r[6] }}</td>  {# username #}
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+            <td>{{ r[4] }}</td>
+            <td>{{ r[5] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p style="text-align: center;">Немає бронювань</p>
+    {% endif %}
+  </section>
+{% endblock %}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Срібний лев{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,600&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Lora', serif;
+        }
+
+        main {
+            flex: 1;
+            padding-top: 80px; /* Відступ, щоб вміст не ховався під фіксованим header */
+            box-sizing: border-box;
+        }
+
+        footer {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            width: 100%;
+        }
+
+        .site-title {
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        .flashes {
+            text-align: center;
+            margin: 1em 0;
+        }
+
+        .alert {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert-success { background-color: #4CAF50; color: white; }
+        .alert-danger  { background-color: #f44336; color: white; }
+        .alert-warning { background-color: #ff9800; color: white; }
+        .alert-info    { background-color: #2196F3; color: white; }
+
+        .popup-flash {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: white;
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-title">
+            <img src="{{ url_for('static', filename='images/3ofLMZz.jpg') }}" alt="Логотип" class="logo" />
+        </div>
+
+        <!-- Flash popup -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div id="popup-flash" class="popup-flash" data-message="{{ message|e }}">
+                            <button class="close-btn" aria-label="Закрити">&times;</button>
+                            <span id="popup-message"></span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="header-center">
+            <h1 class="site-title">Срібний лев</h1>
+        </div>
+
+        <nav>
+            <a href="{{ url_for('index') }}">Головна</a>
+            <a href="{{ url_for('menu') }}">Меню</a>
+            <a href="{{ url_for('contacts') }}">Контакти</a>
+            <a href="{{ url_for('reservation') }}">Бронювання</a>
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('bookings') }}">Список бронювань</a>
+                {% else %}
+                    <a href="{{ url_for('my_bookings') }}">Мої бронювання</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}">Вийти ({{ current_user.username }})</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Увійти</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <!-- Flash-повідомлення -->
+        <div class="flashes">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Основний контент сторінки -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const popup = document.getElementById("popup-flash");
+        if (!popup) return;
+
+        const messageSpan = document.getElementById("popup-message");
+        const closeBtn = popup.querySelector(".close-btn");
+        const message = popup.dataset.message;
+
+        if (message) {
+          messageSpan.textContent = message;
+          popup.style.opacity = 0;
+          popup.style.display = "block";
+
+          let opacity = 0;
+          const fadeIn = setInterval(() => {
+            if (opacity < 1) {
+              opacity += 0.05;
+              popup.style.opacity = opacity;
+            } else {
+              clearInterval(fadeIn);
+            }
+          }, 30);
+
+          setTimeout(() => {
+            let opacity = 1;
+            const fadeOut = setInterval(() => {
+              if (opacity > 0) {
+                opacity -= 0.05;
+                popup.style.opacity = opacity;
+              } else {
+                clearInterval(fadeOut);
+                popup.style.display = "none";
+              }
+            }, 30);
+          }, 5000);
+        }
+
+        closeBtn.addEventListener("click", () => {
+          let opacity = 1;
+          const fadeOut = setInterval(() => {
+            if (opacity > 0) {
+              opacity -= 0.05;
+              popup.style.opacity = opacity;
+            } else {
+              clearInterval(fadeOut);
+              popup.style.display = "none";
+            }
+          }, 30);
+        });
+      });
+    </script>
+
+    <footer>
+        <p>&copy; 2024 Срібний лев. Всі права захищено.</p>
+    </footer>
+</body>
+</html>
